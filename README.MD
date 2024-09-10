@@ -67,7 +67,7 @@ This project is for educational purposes only. Ensure you comply with the terms 
 
 ## Personal Note
 
-I tried my best to create something that allows for the use of local llama.cpp run LLM's for web-earching, always in the past being frustrated that while services like ChatGPT could do web searching while local models never were easily able to.
+I tried my best to create something that allows for the use of local llama.cpp run LLM's for web-searching, always in the past being frustrated that while services like ChatGPT could do web searching while local models never were easily able to.
 
 Web-LLM Assistant represents countless hours of learning, coding, and problem-solving and is actually my first ever attempt at anything coding related especially anything I built from scratch.
 
