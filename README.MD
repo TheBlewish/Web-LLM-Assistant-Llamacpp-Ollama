@@ -65,7 +65,6 @@ You can modify the following parameters in the `Web-LLM.py` file:
 I'm working on enhancing the Web-LLM-Assistant with the following features:
 
 - Integration of a more suitable search API for improved query results
-- Support for Anthropic's Claude API
 
 These additions aim to expand the assistant's capabilities and improve its performance, please reach out with any further suggestions for improvements so we can try to make this web assistant the best it could be! 
 
