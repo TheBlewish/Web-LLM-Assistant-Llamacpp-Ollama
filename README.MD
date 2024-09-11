@@ -62,6 +62,15 @@ You can modify the following parameters in the `Web-LLM.py` file:
 - llama-cpp-python
 - see full list of depencies in the requirements.txt
 
+## Future Plans
+
+I'm working on enhancing the Web-LLM-Assistant with the following features:
+
+- Support for Anthropic's Claude API
+- Integration of a more suitable search API for improved query results
+
+These additions aim to expand the assistant's capabilities and improve its performance, please reach out with any further suggestions for improvements so we can try to make this web assistant the best it could be! 
+
 ## Contributing
 
 Contributions to improve Web-LLM Assistant are welcome and encouraged! Please feel free to submit a Pull Request.
