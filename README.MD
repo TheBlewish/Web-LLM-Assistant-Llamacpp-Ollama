@@ -25,9 +25,6 @@ Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cp
 - Multi-attempt searching with intelligent evaluation of search results
 - Comprehensive answer synthesis using both LLM knowledge and web search results
 
-## Dependencies:
-Of course given that this is using an LLM running via Llama.cpp ensure you have that installed and an appropriate model, for me I used Phi-3-medium-128k-instruct-Q6_K.gguf but feel free to use any model you want.
-
 ## Installation
 
 1. Clone the repository:
