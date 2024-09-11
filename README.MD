@@ -11,6 +11,12 @@ Then it will perform a web search, and collect the first 4 results and the infor
 
 Thus allowing you to ask it queries about recent events, or anything that may not actually be in it's training data. Which it can now, via this python program still determine the answer to your question, even if the answer is absent from the LLM's training data via web searching and retrieving information from those searches.
 
+## Project Demonstration
+
+[![Web-LLM-Assistant Llama-cpp demonstration](https://img.youtube.com/vi/3t4_NdwmgUw/0.jpg)](https://www.youtube.com/watch?v=3t4_NdwmgUw "Web-LLM-Assistant Llama-cpp demonstration")
+
+Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cpp in action.
+
 ## Features
 - Local LLM usage via llama_cpp for reduced latency and better control
 - Web searching using DuckDuckGo for privacy-focused, up-to-date information
