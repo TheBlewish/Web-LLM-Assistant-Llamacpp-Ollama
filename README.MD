@@ -64,9 +64,13 @@ You can modify the following parameters in the `Web-LLM.py` file:
 
 I'm working on enhancing the Web-LLM-Assistant with the following features:
 
-- Integration of a more suitable search API for improved query results
+* Implementation of web scraping functionality to extract more comprehensive information from selected search results
+* Optimization of the scraping process to balance between information depth and response time
+* Integration of advanced content parsing to better structure and analyze scraped data
 
-These additions aim to expand the assistant's capabilities and improve its performance, please reach out with any further suggestions for improvements so we can try to make this web assistant the best it could be! 
+These additions aim to significantly improve the assistant's ability to gather and synthesize information from the web, providing more detailed and accurate responses to user queries.
+
+We're always looking to improve! If you have any suggestions or ideas on how we can make this web assistant even better, please don't hesitate to reach out. Your input is invaluable in our quest to create the best possible web-assisted LLM experience.
 
 ## Contributing
 
