@@ -24,6 +24,7 @@ Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cp
 - Rich console output with colorful and animated indicators for better user experience
 - Multi-attempt searching with intelligent evaluation of search results
 - Comprehensive answer synthesis using both LLM knowledge and web search results
+- Web scraping of search results for full information for the LLM to utilise
 
 ## Installation
 
