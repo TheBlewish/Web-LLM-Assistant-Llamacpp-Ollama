@@ -11,7 +11,7 @@ Then it will perform a web search, and collect the first 10 results and the info
 
 Thus allowing you to ask it queries about recent events, or anything that may not actually be in it's training data. Which it can now, via this python program still determine the answer to your question, even if the answer is absent from the LLM's training data via web searching and retrieving information from those searches.
 
-## Project Demonstration
+## Project Demonstration (outdated-since recent update)
 
 [![Web-LLM-Assistant Llama-cpp demonstration](https://img.youtube.com/vi/3t4_NdwmgUw/0.jpg)](https://www.youtube.com/watch?v=3t4_NdwmgUw "Web-LLM-Assistant Llama-cpp demonstration")
 
