@@ -123,12 +123,12 @@ class EnhancedSelfImprovingSearch:
                 print(Fore.MAGENTA + "⚙️ Scraping selected pages..." + Style.RESET_ALL)
                 scraped_content = self.scrape_content(selected_urls)
 
-                self.display_scraped_content(scraped_content)
-
                 if not scraped_content:
                     print(f"{Fore.RED}Failed to scrape content. Retrying...{Style.RESET_ALL}")
                     attempt += 1
                     continue
+
+                self.display_scraped_content(scraped_content)
 
                 self.print_thinking()
 
@@ -344,11 +344,6 @@ Respond with ONLY ONE of the following two options:
 1. Refine: If the information is insufficient or unclear to answer the question completely.
 2. Answer: If there is enough information to provide a comprehensive answer to the user's question.
 Your response MUST be ONLY either "Refine" or "Answer".
-Follow the following examples EXACTLY as shown, no additional text beyond what is demonstrated in the following examples, only one word.
-Here is an example of how you should respond in order to answer:
-Answer
-Here is an example of how you should respond in order to refine:
-Refine
 """
         max_retries = 3
         for attempt in range(max_retries):
@@ -366,30 +361,35 @@ Refine
     def generate_final_answer(self, user_query: str, scraped_content: Dict[str, str]) -> str:
         user_query_short = user_query[:200]
         prompt = f"""
-Based on the user's question: "{user_query_short}"
-And the following scraped content:
+You are an AI assistant. Provide a comprehensive and detailed answer to the following question using ONLY the information provided in the scraped content. Do not include any references or mention any sources. Answer directly and thoroughly.
+
+Question: "{user_query_short}"
+
+Scraped Content:
 {self.format_scraped_content(scraped_content)}
-Please provide a comprehensive and detailed answer to the user's question using the information from the scraped content, do not include references and do not cite any content just use the information to formulate your answer.
-Your response should be in the following format:
-Answer: [Your detailed answer to the user's question]
-Now, provide your response, please don't mention any webpages, and act as if you knew the answer all along and just directly answer the question with no attributions or citations whatsoever.
+
+Answer:
 """
         max_retries = 3
         for attempt in range(max_retries):
             with OutputRedirector() as output:
-                response = self.llm(prompt, max_tokens=500, stop=None)
+                response = self.llm(prompt, max_tokens=1024, stop=None)
             llm_output = output.getvalue()
             logger.info(f"LLM Output in generate_final_answer:\n{llm_output}")
             response_text = response['choices'][0]['text'].strip()
-            if response_text.startswith("Answer:"):
+            if self.is_valid_response(response_text):
                 return response_text
         return "I apologize, but I couldn't generate a satisfactory answer based on the available information."
+
+    def is_valid_response(self, response_text: str) -> bool:
+        # Basic validation to ensure response is meaningful
+        return len(response_text) > 50  # Adjust the threshold as needed
 
     def format_scraped_content(self, scraped_content: Dict[str, str]) -> str:
         formatted_content = []
         for url, content in scraped_content.items():
             content = re.sub(r'\s+', ' ', content)
-            formatted_content.append(f"Content from {url}:\n{content[:2000]}...\n")  # Limit to 2000 characters per URL
+            formatted_content.append(f"Content from {url}:\n{content}\n")  # No character limit
         return "\n".join(formatted_content)
 
     def synthesize_final_answer(self, user_query: str) -> str:
