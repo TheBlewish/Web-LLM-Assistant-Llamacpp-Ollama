@@ -55,7 +55,7 @@ You can modify various llama.cpp parameters in the `llm_config.py` file includin
 ## Dependencies
 
 - llama-cpp-python
-- see full list of depencies in the requirements.txt
+- see full list of dependencies in the requirements.txt
 - Given that this is using an LLM running via Llama.cpp ensure you have that installed an appropriate model, I would reccommend gemma-2-9b-it-Q6_K.gguf but feel free to use any model you want.
 
 ## Recent Update!
