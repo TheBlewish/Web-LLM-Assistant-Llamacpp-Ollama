@@ -304,7 +304,7 @@ Reasoning: [Your reasoning for the selections]
         print(f"\n{Fore.CYAN}Scraped Content:{Style.RESET_ALL}")
         for url, content in scraped_content.items():
             print(f"{Fore.GREEN}URL: {url}{Style.RESET_ALL}")
-            print(f"Content: {content[:1000]}...\n")
+            print(f"Content: {content[:4000]}...\n")
 
     def generate_final_answer(self, user_query: str, scraped_content: Dict[str, str]) -> str:
         user_query_short = user_query[:200]
