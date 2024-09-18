@@ -18,35 +18,22 @@ log_directory = 'logs'
 if not os.path.exists(log_directory):
     os.makedirs(log_directory)
 
-# Configure logger to write only to file and not to console
+# Configure logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 log_file = os.path.join(log_directory, 'llama_output.log')
 file_handler = logging.FileHandler(log_file)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
-logger.handlers = []  # Clear existing handlers
+logger.handlers = []
 logger.addHandler(file_handler)
-logger.propagate = False  # Prevent log messages from propagating to the root logger
+logger.propagate = False
 
-# Suppress logging from root logger and other modules
-root_logger = logging.getLogger()
-root_logger.handlers = []  # Remove all handlers associated with the root logger
-root_logger.propagate = False
-root_logger.setLevel(logging.WARNING)  # Set root logger level to WARNING
-
-# Suppress logging from duckduckgo_search and related modules
-logging.getLogger('duckduckgo_search').setLevel(logging.WARNING)
-logging.getLogger('duckduckgo_search').handlers = []
-logging.getLogger('duckduckgo_search').propagate = False
-
-logging.getLogger('requests').setLevel(logging.WARNING)
-logging.getLogger('requests').handlers = []
-logging.getLogger('requests').propagate = False
-
-logging.getLogger('urllib3').setLevel(logging.WARNING)
-logging.getLogger('urllib3').handlers = []
-logging.getLogger('urllib3').propagate = False
+# Suppress other loggers
+for name in ['root', 'duckduckgo_search', 'requests', 'urllib3']:
+    logging.getLogger(name).setLevel(logging.WARNING)
+    logging.getLogger(name).handlers = []
+    logging.getLogger(name).propagate = False
 
 class OutputRedirector:
     def __init__(self, stream=None):
@@ -73,7 +60,7 @@ class EnhancedSelfImprovingSearch:
     @staticmethod
     def initialize_llm():
         llm_config = get_llm_config()
-        llm_config['verbose'] = False  # Suppress verbose output
+        llm_config['verbose'] = False
         with OutputRedirector() as output:
             llm = Llama(**llm_config)
         initialization_output = output.getvalue()
@@ -132,20 +119,14 @@ class EnhancedSelfImprovingSearch:
 
                 self.print_thinking()
 
-                should_refine, decision = self.synthesize_or_refine(user_query, scraped_content)
-
-                if not should_refine:
-                    return self.generate_final_answer(user_query, scraped_content)
-                else:
-                    print(f"{Fore.YELLOW}Refining search...{Style.RESET_ALL}")
-                    attempt += 1
+                return self.generate_final_answer(user_query, scraped_content)
 
             except Exception as e:
                 print(f"{Fore.RED}An error occurred during search attempt. Check the log file for details.{Style.RESET_ALL}")
                 logger.error(f"An error occurred during search: {str(e)}", exc_info=True)
                 attempt += 1
 
-        return self.synthesize_final_answer(user_query)
+        return self.generate_final_answer(user_query, {})  # Empty scraped_content if all attempts fail
 
     def formulate_query(self, user_query: str, attempt: int) -> Tuple[str, str]:
         user_query_short = user_query[:200]
@@ -193,9 +174,9 @@ Do not provide any additional information or explanation.
         return query, time_range
 
     def clean_query(self, query: str) -> str:
-        query = re.sub(r'["\'\[\]]', '', query)  # Remove quotes and brackets
-        query = re.sub(r'\s+', ' ', query)   # Replace multiple spaces with single space
-        return query.strip()[:100]  # Limit to 100 characters
+        query = re.sub(r'["\'\[\]]', '', query)
+        query = re.sub(r'\s+', ' ', query)
+        return query.strip()[:100]
 
     def validate_time_range(self, time_range: str) -> str:
         valid_ranges = ['d', 'w', 'm', 'y', 'none']
@@ -204,7 +185,7 @@ Do not provide any additional information or explanation.
 
     def fallback_query(self, user_query: str) -> str:
         words = user_query.split()
-        return " ".join(words[:5])  # Use the first 5 words of the user query
+        return " ".join(words[:5])
 
     def perform_search(self, query: str, time_range: str) -> List[Dict]:
         if not query:
@@ -232,7 +213,7 @@ Do not provide any additional information or explanation.
         for result in results:
             print(f"{Fore.GREEN}Result {result['number']}:{Style.RESET_ALL}")
             print(f"Title: {result.get('title', 'N/A')}")
-            print(f"Snippet: {result.get('body', 'N/A')[:200]}...")  # Limit to 200 characters
+            print(f"Snippet: {result.get('body', 'N/A')[:200]}...")
             print(f"URL: {result.get('href', 'N/A')}\n")
 
     def select_relevant_pages(self, search_results: List[Dict], user_query: str) -> List[str]:
@@ -266,14 +247,7 @@ Reasoning: [Your reasoning for the selections]
             if parsed_response and self.validate_page_selection_response(parsed_response, len(search_results)):
                 selected_urls = [result['href'] for result in search_results if result['number'] in parsed_response['selected_results']]
 
-                # Check robots.txt for each selected URL
-                allowed_urls = []
-                for url in selected_urls:
-                    if can_fetch(url):
-                        allowed_urls.append(url)
-                    else:
-                        print(f"{Fore.YELLOW}Warning: Robots.txt disallows scraping of {url}{Style.RESET_ALL}")
-
+                allowed_urls = [url for url in selected_urls if can_fetch(url)]
                 if allowed_urls:
                     return allowed_urls
                 else:
@@ -281,7 +255,6 @@ Reasoning: [Your reasoning for the selections]
             else:
                 print(f"{Fore.YELLOW}Warning: Invalid page selection. Retrying.{Style.RESET_ALL}")
 
-        # If all retries fail, fall back to top 2 results that are allowed by robots.txt
         print(f"{Fore.YELLOW}Warning: All attempts to select relevant pages failed. Falling back to top allowed results.{Style.RESET_ALL}")
         allowed_urls = [result['href'] for result in search_results if can_fetch(result['href'])][:2]
         return allowed_urls
@@ -307,7 +280,7 @@ Reasoning: [Your reasoning for the selections]
         formatted_results = []
         for result in results:
             formatted_result = f"{result['number']}. Title: {result.get('title', 'N/A')}\n"
-            formatted_result += f"   Snippet: {result.get('body', 'N/A')[:200]}...\n"  # Limit to 200 characters
+            formatted_result += f"   Snippet: {result.get('body', 'N/A')[:200]}...\n"
             formatted_result += f"   URL: {result.get('href', 'N/A')}\n"
             formatted_results.append(formatted_result)
         return "\n".join(formatted_results)
@@ -331,32 +304,7 @@ Reasoning: [Your reasoning for the selections]
         print(f"\n{Fore.CYAN}Scraped Content:{Style.RESET_ALL}")
         for url, content in scraped_content.items():
             print(f"{Fore.GREEN}URL: {url}{Style.RESET_ALL}")
-            print(f"Content: {content[:1000]}...\n")  # Display first 1000 characters
-
-    def synthesize_or_refine(self, user_query: str, scraped_content: Dict[str, str]) -> Tuple[bool, str]:
-        user_query_short = user_query[:200]
-        prompt = f"""
-Based on the user's question: "{user_query_short}"
-And the following scraped content:
-{self.format_scraped_content(scraped_content)}
-Determine if the scraped content contains enough relevant information to answer the user's question comprehensively.
-Respond with ONLY ONE of the following two options:
-1. Refine: If the information is insufficient or unclear to answer the question completely.
-2. Answer: If there is enough information to provide a comprehensive answer to the user's question.
-Your response MUST be ONLY either "Refine" or "Answer".
-"""
-        max_retries = 3
-        for attempt in range(max_retries):
-            with OutputRedirector() as output:
-                response = self.llm(prompt, max_tokens=10, stop=None)
-            llm_output = output.getvalue()
-            logger.info(f"LLM Output in synthesize_or_refine:\n{llm_output}")
-            response_text = response['choices'][0]['text'].strip()
-            if re.search(r'\b(Refine|refine)\b', response_text):
-                return True, "refine"
-            elif re.search(r'\b(Answer|answer)\b', response_text):
-                return False, "answer"
-        return True, "refine"  # Default to refine if we can't get a valid response
+            print(f"Content: {content[:1000]}...\n")
 
     def generate_final_answer(self, user_query: str, scraped_content: Dict[str, str]) -> str:
         user_query_short = user_query[:200]
@@ -368,6 +316,11 @@ Question: "{user_query_short}"
 Scraped Content:
 {self.format_scraped_content(scraped_content)}
 
+Important Instructions:
+1. Do not use phrases like "Based on the absence of selected results" or similar.
+2. If the scraped content does not contain enough information to answer the question, say so explicitly and explain what information is missing.
+3. Provide as much relevant detail as possible from the scraped content.
+
 Answer:
 """
         max_retries = 3
@@ -377,19 +330,19 @@ Answer:
             llm_output = output.getvalue()
             logger.info(f"LLM Output in generate_final_answer:\n{llm_output}")
             response_text = response['choices'][0]['text'].strip()
-            if self.is_valid_response(response_text):
+            if response_text:
+                logger.info(f"LLM Response:\n{response_text}")
                 return response_text
-        return "I apologize, but I couldn't generate a satisfactory answer based on the available information."
 
-    def is_valid_response(self, response_text: str) -> bool:
-        # Basic validation to ensure response is meaningful
-        return len(response_text) > 50  # Adjust the threshold as needed
+        error_message = "I apologize, but I couldn't generate a satisfactory answer based on the available information."
+        logger.warning(f"Failed to generate a response after {max_retries} attempts. Returning error message.")
+        return error_message
 
     def format_scraped_content(self, scraped_content: Dict[str, str]) -> str:
         formatted_content = []
         for url, content in scraped_content.items():
             content = re.sub(r'\s+', ' ', content)
-            formatted_content.append(f"Content from {url}:\n{content}\n")  # No character limit
+            formatted_content.append(f"Content from {url}:\n{content}\n")
         return "\n".join(formatted_content)
 
     def synthesize_final_answer(self, user_query: str) -> str:
