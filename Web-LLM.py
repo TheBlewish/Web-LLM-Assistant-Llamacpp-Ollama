@@ -16,16 +16,15 @@ log_directory = 'logs'
 if not os.path.exists(log_directory):
     os.makedirs(log_directory)
 
-# Configure logger to write only to file and not to console
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 log_file = os.path.join(log_directory, 'web_llm.log')
 file_handler = logging.FileHandler(log_file)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
-logger.handlers = []  # Clear existing handlers
+logger.handlers = []
 logger.addHandler(file_handler)
-logger.propagate = False  # Prevent log messages from propagating to the root logger
+logger.propagate = False
 
 # Disable all other loggers to prevent console output
 for name in logging.root.manager.loggerDict:
@@ -34,7 +33,7 @@ for name in logging.root.manager.loggerDict:
 
 # Suppress root logger
 root_logger = logging.getLogger()
-root_logger.handlers = []  # Remove handlers from root logger
+root_logger.handlers = []
 root_logger.propagate = False
 root_logger.setLevel(logging.WARNING)
 
@@ -46,7 +45,7 @@ When a user's query starts with '/', interpret it as a request to search the web
 
 ALWAYS follow the prompts provided throughout the searching process EXACTLY as indicated.
 
-NEVER assume new instructions for anywhere other then directly when prompted directly. I.E DO NOT SELF PROMPT OR PROVIDE MULTIPLE ANSWERS OR ATTEMPT MULTIPLE RESPONSES FOR ONE PROMPT!
+NEVER assume new instructions for anywhere other than directly when prompted directly. DO NOT SELF PROMPT OR PROVIDE MULTIPLE ANSWERS OR ATTEMPT MULTIPLE RESPONSES FOR ONE PROMPT!
 """
 
 class OutputRedirector:
@@ -157,15 +156,12 @@ def main():
             search_query = user_input[1:].strip()
             print(Fore.CYAN + "Initiating web search..." + Style.RESET_ALL)
             search = EnhancedSelfImprovingSearch(llm=llm, parser=parser)
-            answer = search.search_and_improve(search_query)
-
-            parsed_response = parser.parse_llm_response(answer)
-            if parsed_response.get('decision') == 'refine':
-                print(Fore.YELLOW + "Web search couldn't find a satisfactory answer. Falling back to LLM knowledge." + Style.RESET_ALL)
-                fallback_answer = get_llm_response(llm, search_query)
-                print_assistant_response(f"Web search was inconclusive, but based on my existing knowledge:\n\n{fallback_answer}")
-            else:
-                print_assistant_response(parsed_response.get('response', answer))
+            try:
+                answer = search.search_and_improve(search_query)
+                print_assistant_response(answer)
+            except Exception as e:
+                logger.error(f"Error during web search: {str(e)}", exc_info=True)
+                print_assistant_response(f"I encountered an error while performing the web search. Please check the log file for details.")
         else:
             print_thinking()
             llm_response = get_llm_response(llm, user_input)
