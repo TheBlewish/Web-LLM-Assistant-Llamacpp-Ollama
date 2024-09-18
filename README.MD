@@ -19,12 +19,12 @@ Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cp
 
 ## Features
 - Local LLM usage via llama_cpp for reduced latency and better control
-- Web searching using DuckDuckGo for privacy-focused, up-to-date information
+- Web scraping of search results for full information for the LLM to utilise
+- Web searching using DuckDuckGo for privacy-focused searching for pages for scraping
 - Self-improving search mechanism that refines queries based on initial results
 - Rich console output with colorful and animated indicators for better user experience
 - Multi-attempt searching with intelligent evaluation of search results
-- Comprehensive answer synthesis using both LLM knowledge and web search results
-- Web scraping of search results for full information for the LLM to utilise
+- Comprehensive answer synthesis using both LLM knowledge, web search results, and scraped information from the LLMs selected webpages
 
 ## Installation
 
