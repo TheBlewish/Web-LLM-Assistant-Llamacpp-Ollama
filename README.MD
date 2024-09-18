@@ -58,9 +58,11 @@ You can modify various llama.cpp parameters in the `llm_config.py` file includin
 - see full list of dependencies in the requirements.txt
 - Given that this is using an LLM running via Llama.cpp ensure you have that installed an appropriate model, I would reccommend gemma-2-9b-it-Q6_K.gguf but feel free to use any model you want.
 
-## Recent Update!
+## Recent Updates!
 
 in a recent and extensive update, I have now implemented webscraping allowing the program to have the LLM make a search, and pick the 2 most relevant out of 10 results which are then scraped to retrieve information from those two with which to answer the User's question. I have also added an llm_config.py file with which you can alter your llama.cpp generation settings as you would like, including changing the GPU layers option if you have llama.cpp compiled with GPU support enabled to run this program with your GPU!
+
+Also a significant bug has now been entirely fixed, the bug was causing the LLM to state "Due to the absence of results" rather then answer the User's question this has now been completely resolved please let me know if you have any other bugs and I will endeavour to fix it for you!
 
 ## Contributing
 
