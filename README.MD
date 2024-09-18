@@ -13,7 +13,7 @@ Thus allowing you to ask it queries about recent events, or anything that may no
 
 ## Project Demonstration
 
-[![Web-LLM-Assistant Llama-cpp demonstration](https://youtu.be/ZXbMCet5kjo/0.jpg)](https://youtu.be/ZXbMCet5kjo "Web-LLM-Assistant Llama-cpp demonstration")
+[![Web-LLM-Assistant Llama-cpp demonstration](https://img.youtube.com/vi/ZXbMCet5kjo/0.jpg)](https://youtu.be/ZXbMCet5kjo "Web-LLM-Assistant Llama-cpp demonstration")
 
 Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cpp in action.
 
