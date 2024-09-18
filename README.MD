@@ -33,7 +33,7 @@ Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cp
 python -m venv venv
 source venv/bin/activate  # On Windows, use venv\Scripts\activate
 3. Install the required dependencies:
-pip install -r requirements.txt
+pip install -r Requirements.txt
 4. Download the LLM model:
 Download the Phi-3-medium-128k-instruct-Q6_K.gguf model (or another one this is just the one I have used with it) and place it in the appropriate directory (default: `/home/llama.cpp/models/` can be changed via editing model path in llm_config.py also you can adjust llama.cpp settings in that file including GPU layers if you want to use your GPU with it!).
 
