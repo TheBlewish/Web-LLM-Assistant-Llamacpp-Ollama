@@ -1,7 +1,7 @@
 # Web-LLM Assistant
 
 ## Description
-Web-LLM Assistant is an simple web search assistant that leverages a large language model (LLM) running via Llama.cpp to provide informative and context-aware responses to user queries. This project combines the power of LLMs with real-time web searching capabilities, allowing it to access up-to-date information and synthesize comprehensive answers.
+Web-LLM Assistant is an simple web search assistant that leverages a large language model (LLM) running via either Llama.cpp or ollama to provide informative and context-aware responses to user queries. This project combines the power of LLMs with real-time web searching capabilities, allowing it to access up-to-date information and synthesize comprehensive answers.
 
 Here is how it works in practice:
 
@@ -18,7 +18,7 @@ Thus allowing you to ask it queries about recent events, or anything that may no
 Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cpp in action.
 
 ## Features
-- Local LLM usage via llama_cpp for reduced latency and better control
+- Local LLM usage via llama_cpp or ollama.
 - Web scraping of search results for full information for the LLM to utilise
 - Web searching using DuckDuckGo for privacy-focused searching for pages for scraping
 - Self-improving search mechanism that refines queries based on initial results
@@ -29,40 +29,60 @@ Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cp
 ## Installation
 
 1. Clone the repository:
+Clone the repository from GitHub using the git clone command, then navigate to the project directory.
 2. Create a virtual environment (optional but recommended):
 python -m venv venv
 source venv/bin/activate  # On Windows, use venv\Scripts\activate
 3. Install the required dependencies:
-pip install -r Requirements.txt
-4. Download the LLM model:
-Download the Phi-3-medium-128k-instruct-Q6_K.gguf model (or another one this is just the one I have used with it) and place it in the appropriate directory (default: `/home/llama.cpp/models/` can be changed via editing model path in llm_config.py also you can adjust llama.cpp settings in that file including GPU layers if you want to use your GPU with it!).
+Install the required packages by running pip install -r requirements.txt
+4. Proceed to either the Ollama or llama.cpp usage instructions below, depending on which you plan to use.
 
 ## Usage
 
-Run the main script:
-python Web-LLM.py
+Using with Ollama:
 
-- For normal interaction, simply type your message and press CTRL+D to submit.
-- To request a web search, start your message with '/'.
-  Example: "/latest news on AI advancements"
+1. Start the Ollama server:
+Run the command ollama serve to start the Ollama server.
+
+2. Download your desired model using Ollama:
+Use the ollama pull command followed by the model name you wish to use, for example, ollama pull gemma2:9b-instruct-q5_K_M
+
+3. Configure the LLM settings:
+Open the llm_config.py file and update the LLM_TYPE to "ollama" and set the "model_name" to the name of the Ollama model you downloaded.
+
+4. Run the main script:
+Execute the main script by running python Web-LLM.py.
+
+
+Using with Llama.cpp:
+
+1. Prepare your model file:
+Ensure you have a compatible model file (e.g., Phi-3-medium-128k-instruct-Q6_K.gguf) in your desired location.
+
+2. Configure the LLM settings:
+Open the llm_config.py file and update the LLM_TYPE to "llama_cpp". Set the MODEL_PATH to the path of your model file. Update other settings in the llama.cpp section of the config file as needed.
+
+3. Run the main script:
+Execute the main script by running python Web-LLM.py.
+
+
+Interacting with the Assistant:
+
+For normal interaction, simply type your message and press CTRL+D to submit.
+To request a web search, start your message with '/'.
+Example: "/latest news on AI advancements"
 
 The AI will process your input, perform a search if requested, and provide an informed response.
 
 ## Configuration
 
-You can modify various llama.cpp parameters in the `llm_config.py` file including model used, GPU layers or anything you can as with normal llama.cpp use!
+You can modify various llama.cpp or ollama parameters in the `llm_config.py` file.
 
 ## Dependencies
 
-- llama-cpp-python
+- llama-cpp-python or ollama
 - see full list of dependencies in the requirements.txt
-- Given that this is using an LLM running via Llama.cpp ensure you have that installed an appropriate model, I would reccommend gemma-2-9b-it-Q6_K.gguf but feel free to use any model you want.
-
-## Recent Updates!
-
-in a recent and extensive update, I have now implemented webscraping allowing the program to have the LLM make a search, and pick the 2 most relevant out of 10 results which are then scraped to retrieve information from those two with which to answer the User's question. I have also added an llm_config.py file with which you can alter your llama.cpp generation settings as you would like, including changing the GPU layers option if you have llama.cpp compiled with GPU support enabled to run this program with your GPU!
-
-Also a significant bug has now been entirely fixed, the bug was causing the LLM to state "Due to the absence of results" rather then answer the User's question this has now been completely resolved please let me know if you have any other bugs and I will endeavour to fix it for you!
+- Given that this is using an LLM running via Llama.cpp or ollama ensure you have installed an appropriate model, I would reccommend basically any instruct model feel free to try and find the best one for your system!
 
 ## Contributing
 
@@ -83,9 +103,9 @@ This project is for educational purposes only. Ensure you comply with the terms 
 
 ## Personal Note
 
-I tried my best to create something that allows for the use of local llama.cpp run LLM's for web-searching, always in the past being frustrated that while services like ChatGPT could do web searching while local models were never easily able to.
+I tried my best to create something that allows for the use of local Llama.cpp run LLM's for web-searching, always in the past being frustrated that while services like ChatGPT could do web searching while local models were never easily able to. Now of course this program has been updated to also work with Ollama after several requests, so I have tried to give people what they want and now that is possible as well!
 
 Web-LLM Assistant represents countless hours of learning, coding, and problem-solving and is actually my first ever attempt at anything coding related especially anything I built from scratch.
 
-If anyone who knows a lot more then me wants to dive in and make this magnitudes better, that would be fantastic. I believe this is the best I can do at my current level of knowledge, it's still a work in proggress and has it's issues, but it's certainly better at searching the web then llama.cpp alone (which obviously cant at all). So at least in that respect I would say that my goal has been achieved although it certainly has it's problems, i'm pretty happy with what I made for my first ever coding project, would love to know what others think!
+If anyone who knows a lot more then me wants to dive in and make this magnitudes better, that would be fantastic. I believe this is the best I can do at my current level of knowledge, it's still a work in proggress and likely has it's issues, if you find any issues please leave an issue on the github and I will try and fix it for you!
 
