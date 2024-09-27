@@ -29,13 +29,18 @@ Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cp
 ## Installation
 
 1. Clone the repository:
-Clone the repository from GitHub using the git clone command, then navigate to the project directory.
-2. Create a virtual environment (optional but recommended):
+Clone the repository from GitHub using:
+git clone https://github.com/TheBlewish/Web-LLM-Assistant-Llamacpp-Ollama
+then navigate to the project directory.
+
+3. Create a virtual environment (optional but recommended):
 python -m venv venv
 source venv/bin/activate  # On Windows, use venv\Scripts\activate
-3. Install the required dependencies:
+
+4. Install the required dependencies:
 Install the required packages by running pip install -r requirements.txt
-4. Proceed to either the Ollama or llama.cpp usage instructions below, depending on which you plan to use.
+
+5. Install and setup either Ollama or Llama.cpp, then proceed to either the Ollama or Llama.cpp usage instructions below, depending on which you plan to use.
 
 ## Usage
 
