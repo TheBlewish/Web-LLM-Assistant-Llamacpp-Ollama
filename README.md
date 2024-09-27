@@ -101,7 +101,7 @@ This project is licensed under the MIT License - see the [LICENSE] file for deta
 
 ## Acknowledgments
 
-- Thanks to the creators of llama.cpp for providing the foundation for local LLM usage.
+- Thanks to the creators of Llama.cpp and Ollama for providing the foundation for local LLM usage.
 - DuckDuckGo for their search API.
 
 ## Disclaimer
@@ -110,9 +110,9 @@ This project is for educational purposes only. Ensure you comply with the terms 
 
 ## Personal Note
 
-I tried my best to create something that allows for the use of local Llama.cpp run LLM's for web-searching, always in the past being frustrated that while services like ChatGPT could do web searching while local models were never easily able to. Now of course this program has been updated to also work with Ollama after several requests, so I have tried to give people what they want and now that is possible as well!
+I tried my best to create something that allows for the use of local Llama.cpp run LLM's for web-searching, always in the past being frustrated that while services like ChatGPT could do web searching, while local models were never easily able to. Now of course this program has been updated to also work with Ollama after several requests, I have tried to give people what they want and now that is possible to use Ollama as well as Llama.cpp!
 
-Web-LLM Assistant represents countless hours of learning, coding, and problem-solving and is actually my first ever attempt at anything coding related especially anything I built from scratch.
+Web-LLM Assistant represents countless hours of learning, coding, and problem-solving and is actually my first ever attempt at anything coding related, especially anything I built from scratch. 
 
-If anyone who knows a lot more then me wants to dive in and make this magnitudes better, that would be fantastic. I believe this is the best I can do at my current level of knowledge, it's still a work in proggress and likely has it's issues, if you find any issues please leave an issue on the github and I will try and fix it for you!
+I hope you find this program both useful and enjoyable!
 
