@@ -1,7 +1,9 @@
 import re
 from typing import Dict, List, Union
 import logging
+import json
 
+# Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -12,22 +14,16 @@ class UltimateLLMResponseParser:
             'answer': ['answer', 'sufficient', 'enough info', 'can respond', 'adequate', 'comprehensive']
         }
         self.section_identifiers = [
-            ('decision', r'(?i)decision|conclusion|verdict|determination'),
-            ('reasoning', r'(?i)reasoning|rationale|explanation|justification'),
-            ('selected_results', r'(?i)selected results|chosen results|picked results|selected urls|chosen urls|selected numbers'),
-            ('response', r'(?i)response|answer|reply|solution|information')
+            ('decision', r'(?i)decision\s*:'),
+            ('reasoning', r'(?i)reasoning\s*:'),
+            ('selected_results', r'(?i)selected results\s*:'),
+            ('response', r'(?i)response\s*:')
         ]
 
     def parse_llm_response(self, response: str) -> Dict[str, Union[str, List[int]]]:
         logger.info("Starting to parse LLM response")
 
-        # If the response starts with "Answer:", treat it as a final answer
-        if response.strip().lower().startswith("answer:"):
-            return {
-                'decision': 'answer',
-                'response': response.strip()
-            }
-
+        # Initialize result dictionary
         result = {
             'decision': None,
             'reasoning': None,
@@ -35,6 +31,7 @@ class UltimateLLMResponseParser:
             'response': None
         }
 
+        # Define parsing strategies
         parsing_strategies = [
             self._parse_structured_response,
             self._parse_json_response,
@@ -42,6 +39,7 @@ class UltimateLLMResponseParser:
             self._parse_implicit_response
         ]
 
+        # Try each parsing strategy
         for strategy in parsing_strategies:
             try:
                 parsed_result = strategy(response)
@@ -52,10 +50,12 @@ class UltimateLLMResponseParser:
             except Exception as e:
                 logger.warning(f"Error in parsing strategy {strategy.__name__}: {str(e)}")
 
+        # If no strategy succeeded, use fallback parsing
         if not self._is_valid_result(result):
             logger.warning("All parsing strategies failed. Using fallback parsing.")
             result = self._fallback_parsing(response)
 
+        # Post-process the result
         result = self._post_process_result(result)
 
         logger.info("Finished parsing LLM response")
@@ -64,7 +64,7 @@ class UltimateLLMResponseParser:
     def _parse_structured_response(self, response: str) -> Dict[str, Union[str, List[int]]]:
         result = {}
         for key, pattern in self.section_identifiers:
-            match = re.search(f'{pattern}:?\s*(.+?)(?:\n|$)', response, re.IGNORECASE | re.DOTALL)
+            match = re.search(f'{pattern}(.*?)(?={"|".join([p for k, p in self.section_identifiers if k != key])}|$)', response, re.IGNORECASE | re.DOTALL)
             if match:
                 result[key] = match.group(1).strip()
 
@@ -74,7 +74,6 @@ class UltimateLLMResponseParser:
         return result
 
     def _parse_json_response(self, response: str) -> Dict[str, Union[str, List[int]]]:
-        import json
         try:
             json_match = re.search(r'\{.*\}', response, re.DOTALL)
             if json_match:
@@ -164,3 +163,15 @@ class UltimateLLMResponseParser:
 
     def _is_valid_result(self, result: Dict[str, Union[str, List[int]]]) -> bool:
         return bool(result.get('decision') or result.get('response') or result.get('selected_results'))
+
+# Example usage
+if __name__ == "__main__":
+    parser = UltimateLLMResponseParser()
+    test_response = """
+    Decision: answer
+    Reasoning: The scraped content provides comprehensive information about recent AI breakthroughs.
+    Selected Results: 1, 3
+    Response: Based on the scraped content, there have been several significant breakthroughs in AI recently...
+    """
+    parsed_result = parser.parse_llm_response(test_response)
+    print(json.dumps(parsed_result, indent=2))
