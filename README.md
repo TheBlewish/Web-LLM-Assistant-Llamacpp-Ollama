@@ -30,7 +30,9 @@ Click the image above to watch a demonstration of the Web-LLM-Assistant Llama-cp
 
 1. Clone the repository:
 Clone the repository from GitHub using:
+
 git clone https://github.com/TheBlewish/Web-LLM-Assistant-Llamacpp-Ollama
+
 then navigate to the project directory.
 
 3. Create a virtual environment (optional but recommended):
