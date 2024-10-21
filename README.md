@@ -110,9 +110,9 @@ This project is for educational purposes only. Ensure you comply with the terms 
 
 ## Personal Note
 
-I tried my best to create something that allows for the use of local Llama.cpp run LLM's for web-searching, always in the past being frustrated that while services like ChatGPT could do web searching, while local models were never easily able to. Now of course this program has been updated to also work with Ollama after several requests, I have tried to give people what they want and now that is possible to use Ollama as well as Llama.cpp!
+I tried my best to create something that allows for the use of local Llama.cpp run LLM's for web-searching, always in the past being frustrated that while services like ChatGPT could do web searching, while local models were never easily able to. Now of course this program has been updated to also work with Ollama after several requests, I have tried to give people what they want and now I am glad that is possible to use Ollama as well as Llama.cpp!
 
 Web-LLM Assistant represents countless hours of learning, coding, and problem-solving and is actually my first ever attempt at anything coding related, especially anything I built from scratch. 
 
-I hope you find this program both useful and enjoyable!
+I hope you find this program both useful and enjoyable! Please leave any requests for updates or suggestions on the github and I'll resolve any issues and implement any good suggestions!
 
