@@ -72,25 +72,29 @@ def print_header():
     print(Fore.YELLOW + """
     Welcome to the Web-LLM Assistant!
 
-    - For normal interaction, simply type your message and press CTRL+D to submit.
+    - For normal interaction, simply type your message and press CTRL+D (Unix) or CTRL+Z (Windows) to submit.
     - To request a web search, start your message with '/'.
       Example: "/latest news on AI advancements"
 
     The AI will process your input, perform a search if requested,
     and provide an informed response.
 
-    Press CTRL+D to submit your input, and type 'quit' to exit.
+    Press CTRL+D (Unix) or CTRL+Z (Windows) to submit your input, and type 'quit' to exit.
     """ + Style.RESET_ALL)
 
 def get_multiline_input():
-    print(Fore.GREEN + "📝 Enter your message (Press CTRL+D to submit):" + Style.RESET_ALL)
+    submit_key = "CTRL+Z" if os.name == 'nt' else "CTRL+D"
+    print(Fore.GREEN + f"📝 Enter your message (Press {submit_key} to submit):" + Style.RESET_ALL)
     lines = []
     while True:
         try:
             line = input()
             lines.append(line)
-        except EOFError:
+        except EOFError:  # This catches both Ctrl+D on Unix and Ctrl+Z on Windows
             break
+        except KeyboardInterrupt:
+            print("\nInput cancelled")
+            return ""
     return "\n".join(lines)
 
 def print_thinking():
@@ -136,9 +140,10 @@ def print_assistant_response(response):
     print(response)
 
 def print_footer():
-    print(Fore.CYAN + Style.BRIGHT + """
+    submit_key = "CTRL+Z" if os.name == 'nt' else "CTRL+D"
+    print(Fore.CYAN + Style.BRIGHT + f"""
     ╔══════════════════════════════════════════════════════════╗
-    ║  Type 'quit' to exit | CTRL+D to submit                  ║
+    ║  Type 'quit' to exit | {submit_key} to submit                  ║
     ╚══════════════════════════════════════════════════════════╝
     """ + Style.RESET_ALL)
 
