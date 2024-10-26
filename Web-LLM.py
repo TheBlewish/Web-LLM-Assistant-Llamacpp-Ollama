@@ -72,7 +72,7 @@ def print_header():
     print(Fore.YELLOW + """
     Welcome to the Web-LLM Assistant!
 
-    - For normal interaction, simply type your message and press CTRL+D (Unix) or CTRL+Z (Windows) to submit.
+    - For normal interaction, simply type your message and press CTRL+D (Linux/Mac) or CTRL+Z (Windows) to submit.
     - To request a web search, start your message with '/'.
       Example: "/latest news on AI advancements"
 
