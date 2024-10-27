@@ -9,7 +9,10 @@ from llm_response_parser import UltimateLLMResponseParser
 from llm_wrapper import LLMWrapper
 
 # Initialize colorama for cross-platform color support
-init()
+if os.name == 'nt':  # Windows-specific initialization
+    init(convert=True, strip=False, wrap=True)
+else:
+    init()
 
 # Set up logging
 log_directory = 'logs'
