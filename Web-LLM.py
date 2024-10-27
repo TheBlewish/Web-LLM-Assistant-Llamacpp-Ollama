@@ -79,7 +79,7 @@ def print_header():
     The AI will process your input, perform a search if requested,
     and provide an informed response.
 
-    Press CTRL+D (Unix) or CTRL+Z (Windows) to submit your input, and type 'quit' to exit.
+    Press CTRL+D (Linux/Mac) or CTRL+Z (Windows) to submit your input, and type 'quit' to exit.
     """ + Style.RESET_ALL)
 
 def get_multiline_input():
