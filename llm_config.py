@@ -1,6 +1,9 @@
 # llm_config.py
+import os
 
-LLM_TYPE = "ollama"  # Options: 'llama_cpp', 'ollama'
+
+# Get LLM type from environment variable, default to "ollama"
+LLM_TYPE = os.getenv("LLM_TYPE", "ollama")  # Options: 'llama_cpp', 'ollama'
 
 # LLM settings for llama_cpp
 MODEL_PATH = "/filepath/to/your/llama.cpp/model" # Replace with your llama.cpp models filepath
@@ -22,8 +25,8 @@ LLM_CONFIG_LLAMA_CPP = {
 # LLM settings for Ollama
 LLM_CONFIG_OLLAMA = {
     "llm_type": "ollama",
-    "base_url": "http://localhost:11434",  # default Ollama server URL
-    "model_name": "ollama model name",  # Replace with your Ollama model name
+    "base_url": os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),  # default Ollama server URL
+    "model_name": os.getenv("OLLAMA_MODEL", "llama3.2"),  # default Ollama model
     "temperature": 0.7,
     "top_p": 0.9,
     "n_ctx": 20000,  # context size

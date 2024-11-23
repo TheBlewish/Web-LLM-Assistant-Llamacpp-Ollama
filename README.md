@@ -91,6 +91,28 @@ You can modify various llama.cpp or ollama parameters in the `llm_config.py` fil
 - see full list of dependencies in the requirements.txt
 - Given that this is using an LLM running via Llama.cpp or ollama ensure you have installed an appropriate model, I would reccommend basically any instruct model feel free to try and find the best one for your system!
 
+## Docker Usage
+
+Uses Docker to create a reproducible isolated environment for the application to run in.
+
+Compatible with Docker, or alternatives like Podman.
+
+### Quick Start
+Build and run the container with default settings:
+```bash
+docker build -t web_llm-assist .
+docker run -it \
+  -e LLM_TYPE=ollama \
+  -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+  -e OLLAMA_MODEL=llama3.2 \
+  web_llm-assist
+```
+Available environment variables:
+
+- LLM_TYPE: Choose between "ollama" or "llama_cpp" (default: "ollama")
+- OLLAMA_BASE_URL: Base URL for Ollama API (default: "http://localhost:11434" for compatibility outside of Docker)
+    - Use `http://host.docker.internal:11434` to interact with ollama running on the host machine
+
 ## Contributing
 
 Contributions to improve Web-LLM Assistant are welcome and encouraged! Please feel free to submit a Pull Request.
