@@ -4,13 +4,19 @@ from colorama import init, Fore, Style
 import logging
 from io import StringIO
 from Self_Improving_Search import EnhancedSelfImprovingSearch
-from llm_config import get_llm_config
+from llm_config import get_llm_config, MODEL_PATH, LLM_CONFIG_GEMINI
 from llm_response_parser import UltimateLLMResponseParser
 from llm_wrapper import LLMWrapper
+import requests
+
+# Set console encoding to UTF-8
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # Initialize colorama for cross-platform color support
 if os.name == 'nt':  # Windows-specific initialization
     init(convert=True, strip=False, wrap=True)
+    os.system('chcp 65001 >nul 2>&1')  # Set Windows console to UTF-8 mode, suppress output
 else:
     init()
 
@@ -103,40 +109,101 @@ def get_multiline_input():
 def print_thinking():
     print(Fore.MAGENTA + "🧠 Thinking..." + Style.RESET_ALL)
 
-def initialize_llm():
+def check_llm_availability():
+    config = get_llm_config()  # No llm_type for availability check
+    status = {
+        'llama_cpp': {'available': False, 'message': ''},
+        'ollama': {'available': False, 'message': ''},
+        'gemini': {'available': False, 'message': ''}
+    }
+    
+    # Check Llama.cpp
+    model_path = config.get('model_path')
+    if model_path and os.path.exists(model_path) and model_path != "/filepath/to/your/llama.cpp/model":
+        status['llama_cpp']['available'] = True
+        status['llama_cpp']['message'] = '(Local model)'
+    else:
+        status['llama_cpp']['message'] = '(Model not found - add model_path in llm_config.py)'
+    
+    # Check Ollama
     try:
-        print(Fore.YELLOW + "Initializing LLM..." + Style.RESET_ALL)
-        with OutputRedirector() as output:
-            llm_wrapper = LLMWrapper()
-        initialization_output = output.getvalue()
-        logger.info(f"LLM Initialization Output:\n{initialization_output}")
-        print(Fore.GREEN + "LLM initialized successfully." + Style.RESET_ALL)
+        import requests
+        response = requests.get('http://localhost:11434/api/version')
+        if response.status_code == 200:
+            status['ollama']['available'] = True
+            status['ollama']['message'] = '(Local server)'
+        else:
+            status['ollama']['message'] = '(Ollama server not running - start ollama service)'
+    except:
+        status['ollama']['message'] = '(Ollama server not running - start ollama service)'
+    
+    # Check Gemini
+    api_key = config.get('api_key')
+    if api_key and api_key != "your-api-key-here":
+        status['gemini']['available'] = True
+        status['gemini']['message'] = '(Cloud API)'
+    else:
+        status['gemini']['message'] = '(API key not found - add api_key in llm_config.py)'
+    
+    return status
+
+def choose_llm_type():
+    status = check_llm_availability()
+    
+    print(f"\n{Fore.CYAN}Choose your LLM backend:{Style.RESET_ALL}")
+    
+    # Llama.cpp
+    color = Fore.GREEN if status['llama_cpp']['available'] else Fore.RED
+    print(f"{color}1. Llama.cpp {status['llama_cpp']['message']}{Style.RESET_ALL}")
+    
+    # Ollama
+    color = Fore.GREEN if status['ollama']['available'] else Fore.RED
+    print(f"{color}2. Ollama {status['ollama']['message']}{Style.RESET_ALL}")
+    
+    # Gemini
+    color = Fore.GREEN if status['gemini']['available'] else Fore.RED
+    print(f"{color}3. Gemini {status['gemini']['message']}{Style.RESET_ALL}")
+    
+    while True:
+        try:
+            choice = input(f"\n{Fore.GREEN}Enter your choice (1-3): {Style.RESET_ALL}").strip()
+            if choice.lower() == 'q':
+                raise KeyboardInterrupt
+            choice = int(choice)
+            if 1 <= choice <= 3:
+                llm_type = ["llama_cpp", "ollama", "gemini"][choice - 1]
+                if not status[llm_type]['available']:
+                    print(f"{Fore.RED}This LLM backend is not properly configured. Please resolve the setup issue and try again.{Style.RESET_ALL}")
+                    continue
+                return llm_type
+            else:
+                print(f"{Fore.RED}Please enter a number between 1 and 3.{Style.RESET_ALL}")
+        except ValueError:
+            print(f"{Fore.RED}Please enter a valid number.{Style.RESET_ALL}")
+
+def initialize_llm(llm_type):
+    try:
+        print(Fore.YELLOW + "\nInitializing LLM..." + Style.RESET_ALL)
+        config = get_llm_config(llm_type=llm_type)
+        llm_wrapper = LLMWrapper(llm_type=llm_type, config=config)
+        if llm_wrapper is None:
+            print(Fore.RED + "Failed to initialize LLM. Exiting." + Style.RESET_ALL)
+            sys.exit(1)
         return llm_wrapper
     except Exception as e:
-        logger.error(f"Error initializing LLM: {str(e)}", exc_info=True)
-        print(Fore.RED + f"Error initializing LLM. Check the log file for details." + Style.RESET_ALL)
-        return None
+        print(Fore.RED + f"Error initializing LLM: {str(e)}" + Style.RESET_ALL)
+        sys.exit(1)
 
 def get_llm_response(llm, prompt):
     try:
         full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {prompt}\nAssistant:"
-        llm_config = get_llm_config()
-        generate_kwargs = {
-            'max_tokens': llm_config.get('max_tokens', 1024),
-            'stop': llm_config.get('stop', None),
-            'temperature': llm_config.get('temperature', 0.7),
-            'top_p': llm_config.get('top_p', 1.0),
-            'top_k': llm_config.get('top_k', 0),
-            'repeat_penalty': llm_config.get('repeat_penalty', 1.0),
-        }
-        with OutputRedirector() as output:
-            response_text = llm.generate(full_prompt, **generate_kwargs)
-        llm_output = output.getvalue()
-        logger.info(f"LLM Output in get_llm_response:\n{llm_output}")
-        return response_text
+        response = llm.generate(full_prompt)
+        logger.info(f"LLM Output:\n{response}")
+        return parser.parse_llm_response(response)
     except Exception as e:
         logger.error(f"Error getting LLM response: {str(e)}", exc_info=True)
-        return f"Sorry, I encountered an error while processing your request. Please check the log file for details."
+        print(Fore.RED + f"Error getting response from LLM. Check the log file for details." + Style.RESET_ALL)
+        return None
 
 def print_assistant_response(response):
     print(Fore.GREEN + "\n🤖 Assistant:" + Style.RESET_ALL)
@@ -151,20 +218,22 @@ def print_footer():
     """ + Style.RESET_ALL)
 
 def main():
+    # Choose LLM type
+    llm_type = choose_llm_type()
+
+    # Initialize LLM
+    llm = initialize_llm(llm_type)
+    if llm is None:
+        print(Fore.RED + "Failed to initialize LLM. Exiting." + Style.RESET_ALL)
+        return
+
+    # Show welcome message after LLM is initialized
     print_header()
-    llm = None
 
     while True:
         user_input = get_multiline_input()
         if user_input.lower().strip() == 'quit':
             break
-
-        if llm is None:
-            print(Fore.YELLOW + "Initializing LLM for the first time..." + Style.RESET_ALL)
-            llm = initialize_llm()
-            if llm is None:
-                print(Fore.RED + "Failed to initialize LLM. Exiting." + Style.RESET_ALL)
-                return
 
         if user_input.startswith('/'):
             search_query = user_input[1:].strip()

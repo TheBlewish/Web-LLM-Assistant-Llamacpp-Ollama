@@ -5,3 +5,4 @@ requests
 beautifulsoup4
 trafilatura
 readchar
+google-generativeai>=0.3.0
