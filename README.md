@@ -1,6 +1,6 @@
 # Web-LLM Assistant
 
-## Description
+## Description [中文README](./README_ZH.md)
 Web-LLM Assistant is a simple web search assistant that leverages a large language model (LLM) running via either Llama.cpp or Ollama to provide informative and context-aware responses to user queries. This project combines the power of LLMs with real-time web searching capabilities, allowing it to access up-to-date information and synthesize comprehensive answers.
 
 Here is how it works in practice:
